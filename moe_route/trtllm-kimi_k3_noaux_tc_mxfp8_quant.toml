@@ -1,6 +1,6 @@
 op = "MoE routing top-16 of 896 experts by sigmoid + bias, weights normalized and scaled + mxfp8 quant of the 3584-wide bf16 row (kimi_k3_noaux_tc_mxfp8_quant_kernel)"
 at = "https://github.com/NVIDIA/TensorRT-LLM/blob/46e067350f3d7670e73bb9ab17e7b42de7f31586/cpp/tensorrt_llm/kernels/noAuxTcKernels.cu#kimi_k3_noaux_tc_mxfp8_quant_kernel"
-arch = ["sm_100"]
+arch = ["sm_100", "sm_103", "sm_107", "sm_120", "sm_121"]
 license = "Apache-2.0"
 notes = """
 2026-11-16: in TensorRT-LLM since 2026-08-19 (e1a984e049, #17059). Its decode top-k became two-level

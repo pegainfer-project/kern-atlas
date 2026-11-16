@@ -48,6 +48,9 @@ def entry_problems(path, aliases):
         (["`arch` is a non-empty list of nvcc arch names like sm_103a"]
          if "arch" in e and not (isinstance(e["arch"], list) and e["arch"]
                                  and all(isinstance(a, str) and ARCH.fullmatch(a) for a in e["arch"])) else []) + \
+        (["`arch` lists an arch twice"] if isinstance(e.get("arch"), list) and len(set(map(str, e["arch"]))) < len(e["arch"]) else []) + \
+        ([f"upstream `arch` `{a}` carries a suffix: a and f are a build's choice" for a in e.get("arch", [])
+          if isinstance(at, str) and at.startswith("https://") and isinstance(a, str) and a[-1:] in ("a", "f")]) + \
         (["upstream entry without `license`"] if isinstance(at, str) and at.startswith("https://") and "license" not in e else []) + \
         (["`license` belongs to upstream entries; ours carry LICENSE in their folder"]
          if isinstance(at, str) and at.startswith("hf:") and "license" in e else [])
@@ -57,7 +60,7 @@ def main():
     aliases = glossary()
     entries = sorted(p for p in ROOT.glob("*/*.toml") if not p.parent.name.startswith("."))
     problems = [f"{p.relative_to(ROOT)}: {msg}" for p in entries for msg in
-                (["symlink to nothing"] if p.is_symlink() and not p.exists() else entry_problems(p, aliases))]
+                ((["symlink to nothing"] if not p.exists() else []) if p.is_symlink() else entry_problems(p, aliases))]
     print("\n".join(problems) or f"{len(entries)} entries, no problems")
     return 1 if problems else 0
 

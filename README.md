@@ -25,7 +25,7 @@ symlinked from the others.
 |---|---|---|
 | `op` | required | what it computes, one sentence (below) |
 | `at` | required | where it lives |
-| `arch` | required | nvcc's spelling (`sm_90a`, `sm_100f`, `sm_103a`): the cubin's target, or the archs the source has a path for |
+| `arch` | required | every arch it runs on, listed one by one in nvcc's spelling (`sm_100`, `sm_103a`): the cubin's target, or the archs an upstream build compiles the source for |
 | `license` | upstream entries | SPDX id; ours carry `LICENSE` in their folder |
 | `notes` | optional | facts the source does not show: measurements, what was tried and failed. Each with its date |
 

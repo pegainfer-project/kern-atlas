@@ -28,8 +28,10 @@ Only judgment lives in this file. `python3 check.py` enforces the rest; run it b
   - terms as `GLOSSARY.md` spells them; a new term goes there with the spellings it replaces;
   - no speed or quality words, no arch, no repository, no measurements.
 - `at` for an upstream kernel names a commit hash, never a branch, and the symbol after `#`.
-- `arch`: for ours, the cubin's target as `cuobjdump` reports it; for upstream, the archs the source
-  has a path for, read from its guards and dispatch.
+- `arch` lists every arch, one by one, never a range. For ours, the cubin's target as `cuobjdump`
+  reports it, suffix included. For upstream, each arch the upstream build compiles the source for
+  whose guards and dispatch admit the kernel's whole path, without a suffix (`a` or `f` is the
+  build's choice, not the source's).
 - `notes` holds only what the source does not show: measurements and attempts that failed, each
   dated, with where it was measured (GPU, shapes, commit) and why it failed. A note that stops
   being true is corrected or removed.
