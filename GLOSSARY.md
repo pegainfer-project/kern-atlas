@@ -5,8 +5,11 @@ Search with the first column.
 
 ```
 top-k          topk, top_k
-RMSNorm        rms_norm, rmsnorm, rms norm
-all-reduce     allreduce
+RMSNorm        rms_norm, rms norm
+all-reduce     allreduce, all_reduce
+all-gather     allgather, all_gather
+AttnRes        attn-res, attn_res, attention residual, attention residuals
+MoE combine    moe finalize, moe_finalize
 MoE routing    moe router, expert gating
 quant          quantize, quantization
 mxfp8          mx_fp8

@@ -1,0 +1,7 @@
+op = "embedding lookup of 7168-wide bf16 rows by token id + RMSNorm, the row stored as snapshot 0 + MLA decode split plan, up to 64 rows (kern_k3_embed_rms_plan)"
+at = "hf:Pegainfer/kern-kernels/k3_ar_fused+NRANKS=8-10e88839#kern_k3_embed_rms_plan"
+arch = ["sm_103a"]
+notes = """
+2026-11-16: kernel.cubin is byte-identical to the cubin kern-k31 a8d49a5 pins (sha256 10e88839...). The
+ANY_BATCH=1 build (k3_ar_fused+ANY_BATCH=1+NRANKS=8-d362b908) holds the same SASS for this entry.
+"""

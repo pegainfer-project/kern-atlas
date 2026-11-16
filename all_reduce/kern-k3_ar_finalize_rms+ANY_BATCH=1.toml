@@ -1,0 +1,11 @@
+op = "MoE combine of top-16 3584-wide bf16 rows, any row count + all-reduce of 8 ranks with the shared expert's 7168-wide partial + RMSNorm (kern_k3_ar_finalize_rms)"
+at = "hf:Pegainfer/kern-kernels/k3_ar_fused+ANY_BATCH=1+NRANKS=8-d362b908#kern_k3_ar_finalize_rms"
+arch = ["sm_103a"]
+notes = """
+2026-11-16: kernel.cubin is byte-identical to the cubin kern-k31 a8d49a5 pins (sha256 d362b908...).
+2026-11-05: kern-k31 413b06f's decode step (TP8 on 8 GB300, experts EP2 x TP4, 128k context, real text),
+rank 0, 128 rows: 20.2 us a launch, 1.86 ms a step of 92; 3.02 ms with experts EP8 before b467a60, the
+difference being the wait for the rank with the most active experts.
+2026-11-05: the 8 ranks ready at once, this source as of kern-k31 11c9b66 (an earlier form): 13.1 us at 128 rows,
+22.4 at 256, against a link + latency floor of 6.8 and 13.6.
+"""

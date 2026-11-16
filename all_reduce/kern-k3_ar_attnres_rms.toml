@@ -1,0 +1,13 @@
+op = "all-reduce of 8 ranks' 7168-wide bf16 partials, up to 144 rows + residual add + AttnRes mix with 0-8 snapshots + RMSNorm (kern_k3_ar_attnres_rms_nb<NB>)"
+at = "hf:Pegainfer/kern-kernels/k3_ar_fused+NRANKS=8-10e88839#kern_k3_ar_attnres_rms_nb0"
+arch = ["sm_103a"]
+notes = """
+Entries _nb0 to _nb8, one per snapshot count.
+2026-11-16: kernel.cubin is byte-identical to the cubin kern-k31 a8d49a5 pins (sha256 10e88839...).
+2026-11-05: kern-k31 413b06f's decode step (TP8 on 8 GB300, 128k context, real text), rank 0, 128 rows:
+15.4 us a launch at _nb1 rising to 19.8 at _nb8, the span including the wait for the other ranks' partials.
+2026-11-05: the 8 ranks ready at once, this source as of kern-k31 11c9b66 (an earlier form): 9.4-12.2 us at
+16-64 rows and 1 / 4 / 8 snapshots, 12.4-13.9 at 128 rows.
+2026-11-05, dropped: o_proj pushing its partial into the stage from its cuBLAS epilogue. cuBLAS can write a
+bf16 -0.0, the mark of a slot not yet arrived; a GEMM of our own loses more than the 0.1-1.1 us push it hides.
+"""

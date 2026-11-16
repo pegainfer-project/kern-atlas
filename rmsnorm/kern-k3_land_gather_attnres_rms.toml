@@ -1,0 +1,11 @@
+op = "all-gather of 8 ranks' 896-wide bf16 slices, up to 256 rows + residual add + AttnRes mix with 0-8 snapshots + RMSNorm (kern_k3_land_gather_attnres_rms_nb<NB>)"
+at = "hf:Pegainfer/kern-kernels/k3_ar_fused+NRANKS=8-10e88839#kern_k3_land_gather_attnres_rms_nb0"
+arch = ["sm_103a"]
+notes = """
+Entries _nb0 to _nb8, one per snapshot count.
+2026-11-16: kernel.cubin is byte-identical to the cubin kern-k31 a8d49a5 pins (sha256 10e88839...). The
+ANY_BATCH=1 build (k3_ar_fused+ANY_BATCH=1+NRANKS=8-d362b908) holds the same SASS for these entries.
+2026-11-05: kern-k31 413b06f's decode step (TP8 on 8 GB300, 128k context, real text), rank 0, 128 rows:
+9.8 us a launch at _nb1 rising to 14.8 at _nb8, the span including the wait for the other ranks' slices.
+Column-splitting lat_up and gathering here (395feb2) saved 4.1 GB of weights a rank.
+"""

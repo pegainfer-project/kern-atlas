@@ -1,0 +1,13 @@
+op = "all-reduce of 8 ranks' 7168-wide bf16 partials, any row count + residual add + AttnRes mix with 0-8 snapshots + RMSNorm (kern_k3_ar_attnres_rms_nb<NB>)"
+at = "hf:Pegainfer/kern-kernels/k3_ar_fused+ANY_BATCH=1+NRANKS=8-d362b908#kern_k3_ar_attnres_rms_nb0"
+arch = ["sm_103a"]
+notes = """
+Entries _nb0 to _nb8, one per snapshot count.
+2026-11-16: kernel.cubin is byte-identical to the cubin kern-k31 a8d49a5 pins (sha256 d362b908...).
+2026-11-05: the 8 ranks ready at once, 256 rows, this source as of kern-k31 11c9b66 (an earlier form, which
+re-poisoned every slot of the next stage): 20.8 / 23.4 / 26.6 us at 1 / 4 / 8 snapshots; in step 26.4 us
+(rank 0). Of the 23 us at _nb4, the re-poison took 3.7 us (cut by 422727e), the gathers 4.6 us at the
+NVLink limit and a block's second row ~6 us.
+2026-11-05, dropped: running the row epilogue on its owner rank only and gathering the outputs. It doubles
+the gathers' bytes, already at the link limit (est. +4.5 us at 256 rows, a loss at 128); not built.
+"""
