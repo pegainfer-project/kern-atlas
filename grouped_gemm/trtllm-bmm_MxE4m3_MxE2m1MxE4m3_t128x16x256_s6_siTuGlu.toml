@@ -1,0 +1,22 @@
+op = "grouped GEMM of mxfp8 rows gathered by expert × mxfp4 [up; gate] weights in 16-row tiles + SiTU gate + mxfp8 quant (trtllm-gen bmm_MxE4m3_MxE2m1MxE4m3)"
+at = "https://github.com/NVIDIA/TensorRT-LLM/blob/7d04fb91f9a68d8dcb0ca0a9a97446bc095dba61/cpp/tensorrt_llm/kernels/trtllmGenKernels/batchedGemm/trtllmGen_bmm_export/cubins/Bmm_MxE4m3_MxE2m1MxE4m3_Fp32_Ab32_Bb32_Cb32_t128x16x256_s6_et128x16_m256x16x32_c2x1x1_rM_TN_transOut_schPd2x1x2x3_bN_tma_ldgstsSf_rgTma_clmp_siTuGlu_dynB_sm100f.cubin.tar.zst#bmm_MxE4m3_MxE2m1MxE4m3_Fp32_Ab32_Bb32_Cb32_t128x16x256_s6_et128x16_m256x16x32_c2x1x1_rM_TN_transOut_schPd2x1x2x3_bN_tma_ldgstsSf_rgTma_clmp_siTuGlu_dynB_sm100f"
+arch = ["sm_100", "sm_103"]
+license = "Apache-2.0"
+notes = """
+2026-11-16: no source upstream. NVIDIA's trtllm-gen generator emits the kernel; TensorRT-LLM ships the
+cubin (git LFS, tar.zst) and the host side in trtllmGen_bmm_export/ (BatchedGemmInterface.h fills
+KernelParamsDecl.h, TmaDescriptor.h); FlashInfer ships the same family through flashinfer-cubin.
+One sm100f cubin for CC 10.0 and 10.3. Launch: 512 threads, cluster 2x1x1, ~223 KB shared memory,
+persistent; rows gathered by TMA through the routing's permutation.
+kern-k31's decode FC1 is FlashInfer's export of this tile with an f32 bias per row (biasFp32M),
+flashinfer-cubin 0.6.18, TLLM_GEN_EXPORT_VERSION 7.0.4.0.4.0; this TensorRT-LLM commit has the tile only
+without it.
+Measured in kern-k31 413b06f's decode step on GB300 (experts EP2 x TP4: 448 experts a GPU, 768 of
+each one's 3072 intermediate width; 3584-wide latent; real routing), 128 rows: 127 us a launch, ~5.8
+TB/s of expert weights (~254 active experts a GPU by 2026-11-05's routing statistics) over the
+kernel's span including its PDL wait.
+2026-11-05: FlashInfer 0.6.13's tactic sweep on one GB300 (latent 3584, intermediate 3072, top-16 of
+896, real routing, 16-256 rows, kern-k31 11c9b66): this tile with the FC2 at the same tile is the best
+tactic at every size or within 0.5% of it; 8-row tiles tie at 16-64 rows. Splitting
+each expert 4 ways (768 wide) costs the same per byte (0.98-1.02x, FC1 + FC2).
+"""

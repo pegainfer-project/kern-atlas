@@ -1,0 +1,19 @@
+op = "grouped GEMM of mxfp8 rows in expert order × mxfp4 expert weights in 16-row tiles, bf16 out (trtllm-gen bmm_Bfloat16_MxE2m1MxE4m3)"
+at = "https://github.com/NVIDIA/TensorRT-LLM/blob/7d04fb91f9a68d8dcb0ca0a9a97446bc095dba61/cpp/tensorrt_llm/kernels/trtllmGenKernels/batchedGemm/trtllmGen_bmm_export/cubins/Bmm_Bfloat16_MxE2m1MxE4m3_Fp32_Ab32_Bb32_t128x16x256_s6_et128x16_m256x16x32_c2x1x1_rM_TN_transOut_schPd2x1x2x3_biasFp32M_bN_rgTma_clmp_dynB_sm100f.cubin.tar.zst#bmm_Bfloat16_MxE2m1MxE4m3_Fp32_Ab32_Bb32_t128x16x256_s6_et128x16_m256x16x32_c2x1x1_rM_TN_transOut_schPd2x1x2x3_biasFp32M_bN_rgTma_clmp_dynB_sm100f"
+arch = ["sm_100", "sm_103"]
+license = "Apache-2.0"
+notes = """
+2026-11-16: no source upstream. NVIDIA's trtllm-gen generator emits the kernel; TensorRT-LLM ships the
+cubin (git LFS, tar.zst) and the host side in trtllmGen_bmm_export/ (BatchedGemmInterface.h fills
+KernelParamsDecl.h, TmaDescriptor.h); FlashInfer ships the same family through flashinfer-cubin.
+One sm100f cubin for CC 10.0 and 10.3. Launch: 512 threads, cluster 2x1x1, ~225 KB shared memory,
+persistent; reads the rows its FC1 wrote, no gather.
+kern-k31's decode FC2 is this variant by name from flashinfer-cubin 0.6.18; its bytes differ from this
+commit's cubin. The u2 build (K loop unrolled twice) needs K in multiples of 512, so 768-wide experts
+take this one.
+Measured in kern-k31 413b06f's decode step on GB300 (experts EP2 x TP4, K = 768, 3584 out, real
+routing), 128 rows: 59.7 us a launch, ~6.2 TB/s of expert weights
+(~254 active experts a GPU) over the kernel's span.
+2026-11-05: FlashInfer 0.6.13 on one GB300, same shape: at K = 384 (TP8) it costs 1.13-1.36x per byte
+of K = 3072; K = 768 costs the same per byte as 3072.
+"""
