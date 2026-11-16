@@ -31,13 +31,5 @@ symlinked from the others.
 
 No other field. A new one names the tool that reads it and why the fact cannot stay in the source.
 
-## Writing `op`
-
-- One sentence, at most 160 characters, starting with what is computed.
-- The common name first, the upstream's own in parentheses: `MoE routing top-16 of 896 experts (noaux_tc)`.
-- Sizes as the kernel's numbers: `top-k 2048`, `3584-wide`.
-- Fused stages joined by ` + `, in the order they run.
-- Terms as `GLOSSARY.md` spells them.
-- Not in it: speed or quality words, the arch, the repository, measurements.
-
-`python3 check.py` checks every entry; CI runs it.
+How to search, write an entry and publish a kernel: [AGENTS.md](AGENTS.md). `python3 check.py`
+checks every entry; CI runs it.
