@@ -1,0 +1,12 @@
+op = "DCP top-k merge, send side: the best 384 of a member's local top-k 2048 as 4-byte (bf16 score, position) pushed into every member's Lamport stage (k31_dcp_pack)"
+at = "hf:Pegainfer/kern-kernels/k31_dsa+CAND32=1-d51ca86c#k31_dcp_pack"
+arch = ["sm_103a"]
+notes = """
+2026-11-16: kernel.cubin is byte-identical to the cubin kern-k31 a8d49a5 pins (sha256 d51ca86c...).
+D's build for a member below 65534 positions (128k context at DCP8). Attempts:
+topk/kern-k31_dcp_pack.toml.
+2026-11-05: kern-k31 413b06f's decode step on GB300 (TP8 / DCP8 over two nodes, 128k context, real
+text), rank 0, 128 rows: 12.9 us a launch over its span, 7.9 exclusive. Same setup, us a step over
+24 layers exclusive: 305 with every member's whole 2048 pushed (kern-k31 9815f28), 188 with the best
+384 (d1ca31d).
+"""

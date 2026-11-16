@@ -1,0 +1,11 @@
+op = "DCP top-k merge: top-k 2048 over 8 members' best 384, a member's whole list pulled if its certificate fails, own picks as cache slots (k31_dcp_select)"
+at = "hf:Pegainfer/kern-kernels/k31_dsa-ea5169c1#k31_dcp_select"
+arch = ["sm_103a"]
+notes = """
+2026-11-16: kernel.cubin is byte-identical to the cubin kern-k31 a8d49a5 pins (sha256 ea5169c1...).
+This 8-byte candidate build is D's for a member past 65533 positions; the 4-byte one is
+topk/kern-k31_dcp_select_cand32.toml, where the measurements are. SGLang's merge:
+topk/sglang-dcp_topk_merge.toml.
+2026-11-05: pack and select as one launch (dynamic row ids) was byte-identical and scored the same in
+kern-k31's 16-256 row step bench (29.36 ms both; GB300, TP8 / DCP8, 128k context); dropped.
+"""

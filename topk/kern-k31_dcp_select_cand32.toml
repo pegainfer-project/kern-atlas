@@ -1,0 +1,13 @@
+op = "DCP top-k merge: top-k 2048 over 8 members' 4-byte best 384, a member's whole list pulled if its certificate fails, own picks as cache slots (k31_dcp_select)"
+at = "hf:Pegainfer/kern-kernels/k31_dsa+CAND32=1-d51ca86c#k31_dcp_select"
+arch = ["sm_103a"]
+notes = """
+2026-11-16: kernel.cubin is byte-identical to the cubin kern-k31 a8d49a5 pins (sha256 d51ca86c...).
+D's build for a member below 65534 positions (128k context at DCP8). The folder's other entries are
+k31_dsa-ea5169c1's code (quant/kern-k31_idx_q.toml). Attempts: topk/kern-k31_dcp_select.toml.
+2026-11-05: kern-k31 413b06f's decode step on GB300 (TP8 / DCP8 over two nodes, 128k context, real
+text), rank 0, 128 rows: 16.7 us a launch over its span, 7.9 exclusive. Same setup, us a step over
+24 layers exclusive, local top-k + push + merge: 143 + 188 + 201 at kern-k31 d1ca31d, 141 + 593 + 583
+with whole lists at 11c9b66; SGLang's K3.1 decode (TP8 / DCP8 / EP8) 304 for its local top-k + 531
+for merge_kernel<8, 2048, 384>.
+"""

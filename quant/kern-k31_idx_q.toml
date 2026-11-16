@@ -1,0 +1,15 @@
+op = "indexer query quant to fp8 e4m3 per row and head (32 x 128 bf16, one UE8M0 scale each) + head weights x 1/64 into bf16 (k31_idx_q)"
+at = "hf:Pegainfer/kern-kernels/k31_dsa-ea5169c1#k31_idx_q"
+arch = ["sm_103a"]
+notes = """
+2026-11-16: kernel.cubin is byte-identical to the cubin kern-k31 a8d49a5 pins (sha256 ea5169c1...).
+Its entries without a file here: k31_idx_key (the indexer key's LayerNorm + quant into its 144-byte
+cache row; D under DCP does it in k3_mla_prep's IDX_KEY build, rmsnorm/), k31_idx_plan (a prefill
+row's key range in the gathered stream), k31_topk_slots (top-k positions to cache slots through the
+page table), k31_dcp_poison (the candidate stages poisoned once). The CAND32 build of the same source
+is k31_dsa+CAND32=1-d51ca86c (topk/kern-k31_dcp_*_cand32.toml).
+2026-11-05: kern-k31 11c9b66's decode step on GB300 (TP8 / DCP8 over two nodes, 128k context, real
+text, rank 0): 3.3 / 3.4 / 3.5 / 4.8 / 6.3 us a launch exclusive at 16 / 32 / 64 / 128 / 256 rows.
+SGLang's K3.1 decode trace at 128 rows has its _indexer_q_quant_head_gate_kernel at 2.7 us against
+this kernel's 4.8; not chased.
+"""

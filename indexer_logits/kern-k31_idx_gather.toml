@@ -1,0 +1,7 @@
+op = "indexer key gather: every sequence's paged 144-byte key rows (128 fp8 e4m3 + a UE8M0 word) into one contiguous stream of keys and scale words (k31_idx_gather)"
+at = "hf:Pegainfer/kern-kernels/k31_dsa-ea5169c1#k31_idx_gather"
+arch = ["sm_103a"]
+notes = """
+2026-11-16: kernel.cubin is byte-identical to the cubin kern-k31 a8d49a5 pins (sha256 ea5169c1...).
+It feeds indexer_logits/kern-k31_mqa_logits.toml on prefill.
+"""

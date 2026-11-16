@@ -1,0 +1,12 @@
+op = "DCP top-k merge, send side: the best 384 of a member's local top-k 2048 as (bf16 score, position) pushed into every member's Lamport stage (k31_dcp_pack)"
+at = "hf:Pegainfer/kern-kernels/k31_dsa-ea5169c1#k31_dcp_pack"
+arch = ["sm_103a"]
+notes = """
+2026-11-16: kernel.cubin is byte-identical to the cubin kern-k31 a8d49a5 pins (sha256 ea5169c1...).
+This 8-byte candidate build is D's for a member past 65533 positions (K3.1's 1M context at DCP8);
+the 4-byte one is topk/kern-k31_dcp_pack_cand32.toml, where the measurements are.
+2026-11-05: SGLang #48588's exact hot-candidate merge over unicast pushes (kern bans multicast),
+kern-k31 d1ca31d, byte-identical to the whole-list exchange it replaced. Having k31_topk_held emit
+the 384 itself was not done: it orders keys as floats (-0 equal to +0, NaN canonical) where the
+merge orders the 40-bit (score16, position) key, so its first 384 are not always the merge's.
+"""
