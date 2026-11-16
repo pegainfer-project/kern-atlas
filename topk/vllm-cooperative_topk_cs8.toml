@@ -1,0 +1,4 @@
+op = "top-k 512, 1024 or 2048 per row of f32 or bf16 decode logits, up to 64 rows, each row read by a cluster of 8 CTAs (cooperative_topk_cs8)"
+at = "https://github.com/vllm-project/vllm/blob/902364d152ff5cc204addd049c217e3bd68cc2fe/csrc/cooperative_topk.cu#cooperative_topk_cs8"
+arch = ["sm_90", "sm_100", "sm_103", "sm_107", "sm_110", "sm_120", "sm_121"]
+license = "Apache-2.0"

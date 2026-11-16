@@ -1,0 +1,25 @@
+op = "sparse MLA decode attention: each row over its own picked cache rows, fp8 e4m3 q and 576-wide KV, 128 heads, bf16 o + softmax stats (trtllm-gen TokenSparseP1)"
+at = "https://github.com/NVIDIA/TensorRT-LLM/blob/7d04fb91f9a68d8dcb0ca0a9a97446bc095dba61/cpp/tensorrt_llm/kernels/trtllmGenKernels/fmha/cubin/FmhaSm100fKernel_QkvE4m3OBfloat16HQk576HV512HVPerCta256PagedKvDenseStaticTokenSparseP1VarSeqQ64Kv128Persistent2CtaKeepsAbForGen.cubin.tar.zst#fmhaSm100fKernel_QkvE4m3OBfloat16HQk576HV512HVPerCta256PagedKvDenseStaticTokenSparseP1VarSeqQ64Kv128Persistent2CtaKeepsAbForGen"
+arch = ["sm_100", "sm_103"]
+license = "Apache-2.0"
+notes = """
+2026-11-16: no source upstream. NVIDIA's trtllm-gen generator emits the kernel; TensorRT-LLM ships the
+cubin (git LFS, tar.zst; last changed 2026-10-12, 8fb3037, #20054) and the host side in fmha/
+(fmhaKernels.h, fmhaRunnerParams.h). One sm100f cubin for CC 10.0 and 10.3. As kern-k31 launches it:
+grid (2, 1, rows), no KV split, the cluster's two CTAs splitting the 128 heads.
+kern-k31 runs it from FlashInfer 0.7.2.post1's flashinfer-cubin (sha256 dce16ffb...). This commit's
+cubin (sha256 0ef9b130...) differs from that one in 42 instructions, each a kernel-parameter load from
+another constant-bank offset; the rest of the SASS, the 1344-byte parameter block and the CUDA 12.9.90
+build are the same. Its KernelParams layout moved, so an ABI lifted from one does not fit the other.
+2026-11-05: it reads the row lengths before griddepcontrol.wait, so it must not be a PDL launch: once
+declared one in kern-k31, it read stale counts behind the top-k select and hung the step twice.
+2026-11-05: kern-k31 413b06f's decode step on GB300 (TP8 / DCP8 over two nodes, 128k context, real
+text), rank 0, 128 rows (~256 picks a row a member): 17.4 us a launch.
+2026-11-05: one GB300, 256 picks a row, FlashInfer 0.6.13: 9.1 / 9.4 / 10.4 / 15.7 / 26.1 us at 16 /
+32 / 64 / 128 / 256 rows, the MultiCtasKv split variant 12.2 / 14.8 at 16 / 32; FlashInfer main
+8fb7dbf8's prims_ts (96 native heads, packed query plan) 9.2 / 8.9 / 9.5 / 12.9 / 20.7.
+2026-11-13: one GB300 through FlashInfer's trtllm_batch_decode_with_kv_cache_mla, picks read cold, us
+a call: 9.2 at 16 rows of 256 picks; each further 64 picks costs 0.52 / 1.13 / 2.10 us at 64 / 128 /
+256 rows, the 0.52 against ~0.48 for the tile's MMA at fp8 tensor-core peak. FlashInfer's entry splits
+the KV itself (MultiCtasKv + a reduction) at 16 / 32 rows past 256 picks, slower than this launch.
+"""

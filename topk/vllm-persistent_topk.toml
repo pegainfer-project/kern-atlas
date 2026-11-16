@@ -1,0 +1,11 @@
+op = "top-k 512, 1024 or 2048 per row of f32 or bf16 logits, a long row's radix select spread over a group of CTAs behind a spin barrier (persistent_topk_kernel)"
+at = "https://github.com/vllm-project/vllm/blob/902364d152ff5cc204addd049c217e3bd68cc2fe/csrc/topk.cu#persistent_topk_kernel"
+arch = ["sm_75", "sm_80", "sm_86", "sm_87", "sm_89", "sm_90", "sm_100", "sm_103", "sm_107", "sm_110", "sm_120", "sm_121"]
+license = "Apache-2.0"
+notes = """
+2026-11-16: in vLLM since 2026-04-08 (b55d830, #37421).
+2026-11-05: vLLM 634ec28 (wheel 0.1.dev18497), one GB300, top-k 2048 of 16000 f32 logits a row,
+L2-warm, the persistent_topk op: 15.5 / 15.5 / 11.5 / 11.4 / 18.2 us at 16 / 32 / 64 / 128 / 256 rows
+(which kernel that build sent the larger batches to was not recorded), against 4.8 / 4.8 / 4.8 / 5.0 /
+7.4 for topk/kern-k31_topk_held.toml on bf16 logits.
+"""

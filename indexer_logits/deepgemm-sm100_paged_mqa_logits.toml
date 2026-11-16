@@ -1,0 +1,11 @@
+op = "indexer logits of decode rows over paged mxfp8 or mxfp4 keys, KV split over SMs by a scheduler: relu, bf16 head-weighted sum, bf16 out (sm100_paged_mqa_logits)"
+at = "https://github.com/deepseek-ai/DeepGEMM/blob/5081f8513af57e61696de4f4f04b0e707ffb503e/deep_gemm/include/deep_gemm/impls/sm100_mqa_logits.cuh#sm100_paged_mqa_logits"
+arch = ["sm_100", "sm_103"]
+license = "MIT"
+notes = """
+2026-11-16: its scheduler is scheduler/sm100_paged_mqa_logits.cuh (sm100_paged_mqa_logits_metadata).
+kern-k31's build of this commit over its 144-byte key rows: indexer_logits/kern-k31_paged_mqa_logits.toml.
+2026-11-05: sgl_deep_gemm 0.1.5's fp8_paged_mqa_logits (an older DeepGEMM: f32 logits, SPLIT_KV 256),
+one GB300, 132-byte pages, 16000 keys a row read cold: 9.8 / 15.4 / 26.6 / 47.8 / 89.4 us at 16 / 32 /
+64 / 128 / 256 rows; with mxfp4 keys (68 bytes a position) 7.4 / 10.2 / 16.6 / 29.7 / 52.7.
+"""

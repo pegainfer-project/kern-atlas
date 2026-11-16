@@ -1,0 +1,8 @@
+op = "indexer logits + top-k 512, 1024 or 2048 of prefill rows in one launch, no logits written: fp8 e4m3 q (32 x 128) and keys (fused_mqa_topk_fp8_prefill_kernel)"
+at = "https://github.com/vllm-project/vllm/blob/902364d152ff5cc204addd049c217e3bd68cc2fe/csrc/fused_mqa_topk/fused_mqa_topk.cu#fused_mqa_topk_fp8_prefill_kernel"
+arch = ["sm_100", "sm_103"]
+license = "Apache-2.0"
+notes = """
+2026-11-16: in vLLM since 2026-10-31 (25fc607, #60618); not measured at K3.1's shapes. kern-k31's
+prefill runs the two apart: indexer_logits/kern-k31_mqa_logits.toml, then topk/kern-k31_topk.toml.
+"""

@@ -1,0 +1,9 @@
+op = "top-k 512, 1024 or 2048 per row of f32 or bf16 decode logits, up to 64 rows, each row read by a cluster of 4 CTAs (cooperative_topk_cs4)"
+at = "https://github.com/vllm-project/vllm/blob/902364d152ff5cc204addd049c217e3bd68cc2fe/csrc/cooperative_topk.cu#cooperative_topk_cs4"
+arch = ["sm_90", "sm_100", "sm_103", "sm_107", "sm_110", "sm_120", "sm_121"]
+license = "Apache-2.0"
+notes = """
+2026-11-05: vLLM 634ec28 (wheel 0.1.dev18497), one GB300, top-k 2048 of 16000 f32 logits a row,
+L2-warm, the cooperative_topk op: 10.8 / 11.0 us at 16 / 32 rows (this commit sends them to this
+entry), against 4.8 for topk/kern-k31_topk_held.toml on bf16 logits.
+"""

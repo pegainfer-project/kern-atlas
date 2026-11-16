@@ -1,0 +1,8 @@
+op = "indexer logits of each row over its own candidate blocks of 8 or 16 contiguous mxfp8 or mxfp4 keys: relu, head-weighted sum, bf16 out (sm100_sparse_mqa_logits)"
+at = "https://github.com/deepseek-ai/DeepGEMM/blob/5081f8513af57e61696de4f4f04b0e707ffb503e/deep_gemm/include/deep_gemm/impls/sm100_sparse_mqa_logits.cuh#sm100_sparse_mqa_logits"
+arch = ["sm_100", "sm_103"]
+license = "MIT"
+notes = """
+2026-11-16: in DeepGEMM since 2026-09-10 (66081d4). It scores only the blocks a first level picked, the
+second level of DeepSeek V4.1's two-level indexer; K3.1's indexer scores every key, so it does not apply.
+"""

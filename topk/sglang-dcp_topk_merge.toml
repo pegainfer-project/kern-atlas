@@ -1,0 +1,14 @@
+op = "DCP top-k merge: top-k over 8 or 16 ranks' best candidates by multicast, a rank's full list read if its certificate fails, own picks as slots (merge_kernel)"
+at = "https://github.com/sgl-project/sglang/blob/e0cf330b24e9d892e753a520ece201943694d1ff/python/sglang/kernels/jit/csrc/dsa/dcp_topk_merge.cuh#merge_kernel"
+arch = ["sm_90", "sm_100", "sm_103", "sm_110", "sm_120", "sm_121"]
+license = "Apache-2.0"
+notes = """
+2026-11-16: in SGLang since 2026-11-05 (f353205, #48588); since 2026-11-11 (2c597c9, #49922) its push
+is staged in shared memory and up to two failed ranks fall back in registers. kern-k31's unicast form:
+topk/kern-k31_dcp_pack.toml + topk/kern-k31_dcp_select.toml.
+2026-11-05: the day-0 SGLang K3.1 image (before #49922), TP8 / DCP8 / EP8 on GB300, 128k context, 128
+rows, rank 0: merge_kernel<8, 2048, 384> 531 us a step over 24 layers, its local top-k
+(topk_candidates) 304 more, against 188 + 201 for kern-k31 d1ca31d's pack + select. SGLang's own data
+(#48588): over 109,824 real decode rows (32k and 100k contexts, all 24 layers) no rank held more than
+339 of a row's top 2048, so the fallback never ran.
+"""
