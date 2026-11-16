@@ -1,0 +1,23 @@
+op = "grouped GEMM of mxfp8 rows × mxfp4 expert weights: FC1 gathers rows by expert + SiTU gate + mxfp8 quant, FC2 bf16 out (Prims-TS batched_gemm_kernel_bf16)"
+at = "https://github.com/flashinfer-ai/flashinfer/blob/a2e3d1e7075edf57c87248c63f206c3a3b87a185/flashinfer/prims_ts/batched_gemm/batched_gemm_kernel.py#batched_gemm_kernel_bf16"
+arch = ["sm_100", "sm_103", "sm_107"]
+license = "Apache-2.0"
+notes = """
+2026-11-16: FlashInfer's CuTeDSL port of the trtllm-gen batched GEMMs (PR #4361), the source-available
+equivalent of trtllm-bmm_MxE4m3_MxE2m1MxE4m3_t128x16x256_s6_siTuGlu and
+trtllm-bmm_Bfloat16_MxE2m1MxE4m3_t128x16x256_s6. One entry: FC1 and FC2 are two configs of this one
+kernel, JIT-compiled per config; the same kernel compiles bf16, fp8 e4m3, nvfp4 and mxfp4 × bf16 too.
+Tactics: flashinfer/prims_ts/moe/prims_ts_moe_configs.json (sm_100, sm_103) and
+prims_ts_moe_configs_sm107.json; SiTU reuses the SwiGLU rows. PR #4361: SM103 is arch-gated but has
+not completed signoff qualification. SM107 needs a CuTe DSL that targets it.
+Measured on one GB300, FlashInfer a2e3d1e70, kern-k31's decode shape (experts EP2 x TP4: 448 experts
+a GPU, intermediate 768, latent 3584, top-16 of 896, SiTU alpha 4 beta 25, real routing): each of
+the 441 16-row-tile tactics forced in turn against trtllm-gen's t128x16x256 s6 pair. Best FC1 + FC2
+vs that pair: 16 rows 72.6 vs 72.9 us, 32 rows 105.4 vs 106.3, 64 rows 139.5 vs 140.0, 128 rows
+183.0 vs 183.6, 256 rows 228.7 vs 228.5; within 0.8%. Output is bit-identical to the pair at
+16/32/64/256 rows with every tactic; at 128 rows no tactic matches, ~0.02% of outputs differ by up
+to 2 bf16 ulp, cause unknown. Every tactic reruns bit-identically.
+mxfp4 × mxfp8 requires output1_scale_scalar, output1_scale_gate_scalar and output2_scale_scalar,
+even when all ones. The first run JIT-compiles every candidate tactic serially, ~6 s each. The
+Python launch path costs ~0.7 ms a MoE call; captured cubins do not pay it.
+"""

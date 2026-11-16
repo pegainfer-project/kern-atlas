@@ -19,4 +19,5 @@ kernel's span including its PDL wait.
 896, real routing, 16-256 rows, kern-k31 11c9b66): this tile with the FC2 at the same tile is the best
 tactic at every size or within 0.5% of it; 8-row tiles tie at 16-64 rows. Splitting
 each expert 4 ways (768 wide) costs the same per byte (0.98-1.02x, FC1 + FC2).
+2026-11-16: source-available equivalent: grouped_gemm/flashinfer-prims_ts_batched_gemm.toml (FlashInfer Prims-TS).
 """

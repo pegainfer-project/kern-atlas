@@ -16,4 +16,5 @@ routing), 128 rows: 59.7 us a launch, ~6.2 TB/s of expert weights
 (~254 active experts a GPU) over the kernel's span.
 2026-11-05: FlashInfer 0.6.13 on one GB300, same shape: at K = 384 (TP8) it costs 1.13-1.36x per byte
 of K = 3072; K = 768 costs the same per byte as 3072.
+2026-11-16: source-available equivalent: grouped_gemm/flashinfer-prims_ts_batched_gemm.toml (FlashInfer Prims-TS).
 """
