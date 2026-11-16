@@ -13,6 +13,7 @@ MoE combine    moe finalize, moe_finalize
 MoE routing    moe router, expert gating
 quant          quantize, quantization
 indexer logits  mqa logits, mqa_logits
+attention      attn
 mxfp8          mx_fp8
 mxfp4          mx_fp4
 grouped GEMM   group gemm, grouped_gemm, moe gemm

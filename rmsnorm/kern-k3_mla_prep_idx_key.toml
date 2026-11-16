@@ -1,0 +1,12 @@
+op = "RMSNorm of q_a (1536) and kv_a (512) of an f32 row + latent row into the fp8 e4m3 cache + gate to bf16 + indexer key LayerNorm and quant (kern_k3_mla_prep)"
+at = "hf:Pegainfer/kern-kernels/k3_mla_prep+IDX_KEY=3648+INNER=1536+KV_FP8=1+MLA_FUSED=3808-27af6193#kern_k3_mla_prep"
+arch = ["sm_103a"]
+notes = """
+2026-11-16: kernel.cubin is byte-identical to the cubin kern-k31 a8d49a5 pins (sha256 27af6193...).
+D's build at TP8 / DCP8: a rank's 12 heads of gate, the wfu GEMM's row with the indexer's 160 columns.
+2026-11-05: the indexer key moved in from k31_idx_key's own launch (kern-k31 a60fd25, byte-identical).
+Decode step on GB300 (TP8 / DCP8 over two nodes, 128k context, real text), rank 0, 128 rows, us a step
+over 24 layers exclusive: mla_prep 61 -> 72, k31_idx_key's 56 gone.
+2026-11-05: kern-k31 413b06f's decode step, same setup, 128 rows: 4.4 us a launch over its span, 2.9
+exclusive.
+"""

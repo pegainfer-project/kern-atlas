@@ -1,0 +1,16 @@
+op = "DCP attention merge: each head's sparse partial x W_UV (512 to 128) pushed to its owner + LSE merge of 8 members + sigmoid gate, bf16 (kern_k3_dcp_exchange)"
+at = "hf:Pegainfer/kern-kernels/k3_dcp+SPARSE=1-130a832d#kern_k3_dcp_exchange"
+arch = ["sm_103a"]
+notes = """
+2026-11-16: kernel.cubin is byte-identical to the cubin kern-k31 a8d49a5 pins (sha256 130a832d...).
+Its other entries (kern_k3_dcp_fixup, _pack, _combine: the NCCL route) have no file here.
+2026-11-05: kern-k31 11c9b66 moved the v-up before the wire. Its decode step on GB300 (TP8 / DCP8 over
+two nodes, 128k context, real text), rank 0: 12.5 / 13.1 / 15.0 / 16.3 / 24.3 us a launch exclusive at
+16 / 32 / 64 / 128 / 256 rows, most of it the wait for the slowest member (a cross-node hop and the
+members' uneven attention). At 128 rows, us a step over 24 layers: 391 against 384 for the day-0
+SGLang K3.1 image's push_combine, which leaves the v-up to a cuBLAS GEMM (~8.6 us a layer).
+2026-11-05: kern-k31 413b06f's decode step, same setup, 128 rows: 15.4 us a launch over its span, 15.0
+exclusive.
+2026-11-05, not done: merge items split by columns at <= 32 rows, estimated 0.05 ms a step at 16 rows,
+below what the step bench resolves.
+"""

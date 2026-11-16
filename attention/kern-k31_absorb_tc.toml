@@ -1,0 +1,14 @@
+op = "MLA query absorb: per head, bf16 q_nope (128) x W_UK into 512 latent columns + rope copied, fp8 e4m3 rows of 128 padded heads, 96 written (kern_k31_absorb_tc)"
+at = "hf:Pegainfer/kern-kernels/k31_absorb_tc-489551aa#kern_k31_absorb_tc"
+arch = ["sm_103a"]
+notes = """
+2026-11-16: kernel.cubin is byte-identical to the cubin kern-k31 a8d49a5 pins (sha256 489551aa...).
+2026-11-04: one GB300, a prefill call of 8192 rows: 220 us (203 without the rope), against 389 for the
+mma.sync kernel it replaced.
+2026-11-05: one GB300, W_UK read cold: 8.7 / 8.7 / 9.0 / 9.4 / 12.8 us at 16 / 32 / 64 / 128 / 256
+rows, against attention/kern-k3_mla_absorb_mma+OUT_HEADS=128.toml's 5.1 / 6.4 / 8.9 / 15.4 / 27.4 (f32
+q); at 48 / 64 / 80 / 96 / 128 rows 8.62 / 8.74 / 8.82 / 8.91 / 9.15 against 7.69 / 8.87 / 12.46 /
+13.19 / 15.24, so D runs this build from 65 rows (kern-k31 432a886, byte-identical step).
+2026-11-05: kern-k31 413b06f's decode step on GB300 (TP8 / DCP8 over two nodes, 128k context, real
+text), rank 0, 128 rows: 10.4 us a launch.
+"""

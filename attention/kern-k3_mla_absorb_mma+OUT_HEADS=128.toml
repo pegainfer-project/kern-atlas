@@ -1,0 +1,10 @@
+op = "MLA query absorb: per head, f32 q_nope to bf16 x W_UK into 512 latent columns + rope copied, fp8 e4m3 rows 128 heads apart, 96 written (kern_k3_mla_absorb_mma)"
+at = "hf:Pegainfer/kern-kernels/k3_mla_absorb_mma+OUT_HEADS=128+Q_FP8=1-e55f3af4#kern_k3_mla_absorb_mma"
+arch = ["sm_103a"]
+notes = """
+2026-11-16: kernel.cubin is byte-identical to the cubin kern-k31 a8d49a5 pins (sha256 e55f3af4...).
+D's absorb below 65 rows; from 65, attention/kern-k31_absorb_tc.toml, where the crossover is.
+2026-11-05: kern-k31 11c9b66's decode step on GB300 (TP8 / DCP8 over two nodes, 128k context, real
+text), rank 0, every row count on this build then: 5.7 / 6.8 / 9.5 / 16.3 / 29.5 us a launch exclusive
+at 16 / 32 / 64 / 128 / 256 rows. One GB300 alone, W_UK read cold: 5.1 / 6.4 / 8.9 / 15.4 / 27.4.
+"""
