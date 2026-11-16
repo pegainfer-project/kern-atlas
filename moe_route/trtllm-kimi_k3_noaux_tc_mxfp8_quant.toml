@@ -7,5 +7,7 @@ notes = """
 on 2026-10-17 (e88d19ca3b, #19960): each warp takes the top-16 of 128 experts by redux.sync arg-max
 rounds, then warp 0 takes them over the candidates, bit-identical to the single-warp version before.
 kern-k3-pp-prefill's moe_front reached a two-level top-k of its own the same day; its notes never cite this kernel.
-Not built or measured on GB300 here.
+2026-11-16: built at 46e0673 for sm_103a and run on one GB300 against kern-k31 a8d49a5's router_topk +
+moe_quant, synthetic inputs, 100 calls in a CUDA graph, no PDL: 4.95-5.30 us a call at 1-128 rows and
+8.86 at 256, against 6.84-7.22 and 11.79 for the two launches; outputs bit-identical at every size.
 """
