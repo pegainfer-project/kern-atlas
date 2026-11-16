@@ -1,0 +1,9 @@
+op = "top-k 2048 per row of bf16 logits for decode rows of up to 32768: row held in registers, histogram cut + bitmap output, vLLM's set (k31_topk_held)"
+at = "hf:Pegainfer/kern-kernels/k31_topk-5eff1799#k31_topk_held"
+arch = ["sm_103a"]
+notes = """
+2026-11-05: reached its form in a day of rewrites in kern-k31 (a sort, then radix passes, then one
+histogram + bitmaps); MoE routing top-16 in kern-k3-pp-prefill's moe_front took the same path in
+October. Read the other topk/ entries before writing another.
+2026-11-16: kernel.cubin is SASS-identical to the cubin kern-k31 a8d49a5 pins (sha256 0e729c13...).
+"""

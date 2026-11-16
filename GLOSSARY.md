@@ -1,0 +1,16 @@
+# Glossary
+
+One term a line: the spelling `op` uses, then the spellings `check.py` rejects in its place.
+Search with the first column.
+
+```
+top-k          topk, top_k
+RMSNorm        rms_norm, rmsnorm, rms norm
+all-reduce     allreduce
+MoE routing    moe router, expert gating
+mxfp8          mx_fp8
+bf16           bfloat16
+fp8 e4m3       float8_e4m3, e4m3fn
+prefill        context phase
+decode         generation phase
+```

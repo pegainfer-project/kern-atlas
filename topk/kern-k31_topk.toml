@@ -1,0 +1,7 @@
+op = "top-k 2048 per row of bf16 logits for prefill rows: the set vLLM's top_k_per_row_prefill selects, positions ascending, same bytes every run (k31_topk)"
+at = "hf:Pegainfer/kern-kernels/k31_topk-5eff1799#k31_topk"
+arch = ["sm_103a"]
+notes = """
+2026-11-16: kernel.cubin is SASS-identical to the cubin kern-k31 a8d49a5 pins (sha256 0e729c13...),
+which was built at another path.
+"""
