@@ -1,0 +1,13 @@
+op = "indexer logits of prefill rows over a contiguous key stream, [ks, ke) a row: 32 heads x 128 fp8 e4m3, relu, bf16 head-weighted sum, bf16 out (sm100_mqa_logits)"
+at = "https://github.com/pegainfer-project/kern-k31/blob/a8d49a5d20a94a5ea29b59c1e45f1c49e1b8adf1/source/k31_mqa_logits.cu#_ZN9deep_gemm16sm100_mqa_logitsILj32ELj128ELb0ELj4ELj384ELj128ELj3ELj3ELj3ELj152ELj128ELj384EN7cutlass12float_e4m3_tELj3EEEvjjjPKjS4_S4_P13__nv_bfloat1614CUtensorMap_stS7_S7_S7_S7_"
+arch = ["sm_100", "sm_103"]
+license = "MIT"
+notes = """
+2026-11-16: DeepGEMM 5081f85's kernel, built over source/deepgemm-k31, whose patch changes only the
+paged path. MIT as DeepGEMM; kern-k31 itself is Apache-2.0. Its key stream:
+indexer_logits/kern-k31_idx_gather.toml.
+2026-11-04: one GB300, a 4-layer P program (kern bench): 375 / 1076 / 4119 us a call at 512 / 1536 /
+6144 rows of 229k keys and 4395 at 8192 of 196k, against 573 / 1724 / 6077 / 7465 for DeepGEMM
+ab69f76's kernel summing the heads in f32 (f32 logits). Logits within 1.2e-2 relative of f32, the
+top-k's recall against an f32 reference at least 0.994.
+"""

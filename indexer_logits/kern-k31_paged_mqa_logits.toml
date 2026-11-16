@@ -1,0 +1,20 @@
+op = "indexer logits of decode rows over their paged 144-byte key rows: 32 heads x 128 fp8 e4m3, relu, bf16 head-weighted sum, bf16 out (sm100_paged_mqa_logits)"
+at = "https://github.com/pegainfer-project/kern-k31/blob/a8d49a5d20a94a5ea29b59c1e45f1c49e1b8adf1/source/k31_paged_mqa_logits.cu#_ZN9deep_gemm22sm100_paged_mqa_logitsILj32ELj128ELj64ELj4ELj128ELj3ELj3ELj3ELj384ELj8ELj128ELj384EN7cutlass12float_e4m3_tELj3EEEvjjjPKjP13__nv_bfloat16S4_S4_S4_14CUtensorMap_stS7_S7_S7_S7_"
+arch = ["sm_100", "sm_103"]
+license = "MIT"
+notes = """
+2026-11-16: DeepGEMM 5081f85's kernel over source/deepgemm-k31's patch (DG_SF_KV_STRIDE 4), which
+exists because kern's indexer key cache is token-major, 144 bytes a position (16-byte rows for kern's
+P -> D push and TMA), where DeepGEMM's page holds 132 bytes a position (64 keys, then their 64 scale
+words). MIT as DeepGEMM; kern-k31 itself is Apache-2.0. The same module holds upstream's scheduler
+(sm100_paged_mqa_logits_metadata), which D launches once a step.
+2026-11-05: kern-k31 413b06f's decode step on GB300 (TP8 / DCP8 over two nodes, 128k context: ~16000
+keys a row a member, real text), rank 0, 128 rows: 59.6 us a launch over its span, 54.7 exclusive;
+the scheduler 8.4 us once a step.
+2026-11-05: one GB300, 16000 keys a row read cold, kern-k31 11c9b66: 10.7 / 17.0 / 30.3 / 53.4 / 101.4
+us at 16 / 32 / 64 / 128 / 256 rows, against 9.8 / 15.4 / 26.6 / 47.8 / 89.4 for sgl_deep_gemm 0.1.5's
+fp8_paged_mqa_logits on 132-byte pages (f32 logits, SPLIT_KV 256). Whether the layout or the split
+makes the difference is not measured.
+2026-11-05: in the day-0 SGLang K3.1 image's decode step (sgl-deep-gemm 0.2.3.post2: f32 logits,
+SPLIT_KV 256, 132-byte pages), 128 rows: 57.7 us a launch, against 55.4 here (kern-k31 11c9b66).
+"""
